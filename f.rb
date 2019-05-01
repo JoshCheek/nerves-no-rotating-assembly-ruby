@@ -35,7 +35,6 @@ class Image < Graphics::Simulation
     num_dots.times do |dot_index|
       vein_index              = dot_index % num_veins
       ring_index              = dot_index / num_veins
-      segment_index           = vein_index / veins_per_segment
       vein_in_segment_index   = vein_index % veins_per_segment
       vein_in_segment_percent = vein_in_segment_index.to_f / veins_per_segment
       vein_percent            = vein_index.to_f / num_veins
@@ -44,17 +43,20 @@ class Image < Graphics::Simulation
         time + (vein_in_segment_percent * duration)
       ) / duration
 
-      pt = translate(w/2, h/2) * # move to middle of the screen
-           rotate(ring_index*5*deg + vein_percent*turn) *
-           translate(vein_radius + ring_index*distance, 0) *
-           rotate(animation_percent*turn) *
-           point(distance, 0)
+      point =
+        translate(w/2, h/2)                             * # move to middle of the screen
+        rotate(ring_index*5*deg + vein_percent*turn)    * # ring index_makes the vein curve, vein_percent rotates the vein into place
+        translate(vein_radius + ring_index*distance, 0) * # move the point to it's distance from the center
+        rotate(animation_percent*turn)                  * # each vein offset rotates the same
+        point(distance, 0)                                # start the given distance out
 
-      color = hsl(vein_percent*360, 1.0, 0.75)
-      circle pt[0,0], pt[1,0], radius, color
+      color = hsl(vein_percent*360, 1.0, 0.75) # colour each vein the same
+
+      circle point[0,0], point[1,0], radius, color
     end
   end
 
+  # formula taken from
   # https://www.rapidtables.com/convert/color/hsl-to-rgb.html
   def hsl(hue, saturation, lightness)
     c = (1 - (2*lightness - 1).abs) * saturation
