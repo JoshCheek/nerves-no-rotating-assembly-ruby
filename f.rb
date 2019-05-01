@@ -11,47 +11,50 @@ class Image < Graphics::Simulation
 
   def initialize
     super 800, 600
-    color.default_proc = -> _, k { k }
+
+    color.default_proc = -> _, k { k } # enable unnamed colours
+
+    @start_time        = Time.now
+
+    # structure
+    @num_segments      = 3
+    @num_rings         = 7
+    @veins_per_segment = 15
+    @num_veins         = @veins_per_segment * @num_segments
+    @num_dots          = @num_veins * @num_rings
+
+    # placement
+    @duration          = 1
+    @draw_radius       = 5
+    @move_radius       = 20
+    @vein_radius       = 120
   end
 
   def draw(n)
     clear :black
-
-    @start_time ||= Time.now
     time = Time.now - @start_time
 
-    duration    = 1
-    radius      = 5
-    distance    = 20
-    vein_radius = 120
-
-    num_segments      = 3
-    num_rings         = 7
-    veins_per_segment = 15
-    num_veins         = veins_per_segment * num_segments
-    num_dots          = num_veins * num_rings
-
-    num_dots.times do |dot_index|
-      vein_index              = dot_index % num_veins
-      ring_index              = dot_index / num_veins
-      vein_in_segment_index   = vein_index % veins_per_segment
-      vein_in_segment_percent = vein_in_segment_index.to_f / veins_per_segment
-      vein_percent            = vein_index.to_f / num_veins
+    @num_dots.times do |dot_index|
+      vein_index              = dot_index % @num_veins
+      ring_index              = dot_index / @num_veins
+      vein_in_segment_index   = vein_index % @veins_per_segment
+      vein_in_segment_percent = vein_in_segment_index.to_f / @veins_per_segment
+      vein_percent            = vein_index.to_f / @num_veins
 
       animation_percent = (
-        time + (vein_in_segment_percent * duration)
-      ) / duration
+        time + (vein_in_segment_percent * @duration)
+      ) / @duration
 
       point =
-        translate(w/2, h/2)                             * # move to middle of the screen
-        rotate(ring_index*5*DEG + vein_percent*TURN)    * # ring index_makes the vein curve, vein_percent rotates the vein into place
-        translate(vein_radius + ring_index*distance, 0) * # move the point to it's distance from the center
-        rotate(animation_percent*TURN)                  * # each vein offset rotates the same
-        point(distance, 0)                                # start the given distance out
+        translate(w/2, h/2)                                  * # move to middle of the screen
+        rotate(ring_index*5*DEG + vein_percent*TURN)         * # ring index_makes the vein curve, vein_percent rotates the vein into place
+        translate(@vein_radius + ring_index*@move_radius, 0) * # move the point to it's distance from the center
+        rotate(animation_percent*TURN)                       * # each vein offset rotates the same
+        point(@move_radius, 0)                                 # start the given distance out
 
       color = hsl(vein_percent*360, 1.0, 0.75) # colour each vein the same
 
-      circle point[0,0], point[1,0], radius, color
+      circle point[0,0], point[1,0], @draw_radius, color
     end
   end
 
