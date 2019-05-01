@@ -15,7 +15,7 @@ class Image < Graphics::Simulation
     clear :black
 
     @start_time ||= Time.now
-    seconds = Time.now - @start_time
+    time = Time.now - @start_time
 
     num_segments      = 3
     num_rings         = 7
@@ -24,20 +24,13 @@ class Image < Graphics::Simulation
     num_veins         = veins_per_segment * num_segments
     num_dots          = num_veins * num_rings
 
-    duration    = 1  # seconds
-    radius      = 5  # pixels
-    distance    = 30 # pixels
+    duration    = 1
+    radius      = 5
+    distance    = 20
     vein_radius = 120
 
     turn = 2*PI
-
-    deg = lambda do |n|
-      turn * n/360
-    end
-
-    dot = lambda do |position, color|
-      circle position[0,0], position[1,0], radius, color
-    end
+    deg  = turn/360
 
     num_dots.times do |dot_index|
       vein_index              = dot_index % num_veins
@@ -48,18 +41,18 @@ class Image < Graphics::Simulation
       vein_percent            = vein_index.to_f / num_veins
 
       animation_percent = (
-        seconds + (vein_in_segment_percent * duration)
-      ) % duration
+        time + (vein_in_segment_percent * duration)
+      ) / duration
 
       pt = translate(w/2, h/2) * # move to middle of the screen
-           rotate(ring_index*deg[5] + vein_percent*turn) *
+           rotate(ring_index*5*deg + vein_percent*turn) *
            translate(vein_radius + ring_index*distance, 0) *
            rotate(animation_percent*turn) *
            point(distance, 0)
 
-      dot[pt, hsl(vein_percent*360, 1.0, 0.75)]
+      color = hsl(vein_percent*360, 1.0, 0.75)
+      circle pt[0,0], pt[1,0], radius, color
     end
-
   end
 
   # https://www.rapidtables.com/convert/color/hsl-to-rgb.html

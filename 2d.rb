@@ -24,6 +24,7 @@ module TwoD
   end
 
   def rotate(radians)
+    radians *= -1
     Matrix[
       [cos(radians), -sin(radians), 0],
       [sin(radians),  cos(radians), 0],
