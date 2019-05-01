@@ -12,16 +12,18 @@ class Image < Graphics::Simulation
   def initialize
     super 800, 600
 
-    color.default_proc = -> _, k { k } # enable unnamed colours
+    # enable unnamed colours
+    color.default_proc = -> _, k { k }
 
+    # track time of rendering so we can progress at the same rate as the CSS
     @start_time        = Time.now
 
     # structure
-    @num_segments      = 3
-    @num_rings         = 7
+    num_segments       = 3
+    num_rings          = 7
     @veins_per_segment = 15
-    @num_veins         = @veins_per_segment * @num_segments
-    @num_dots          = @num_veins * @num_rings
+    @num_veins         = @veins_per_segment * num_segments
+    @num_dots          = @num_veins * num_rings
 
     # placement
     @duration          = 1
