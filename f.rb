@@ -1,5 +1,4 @@
-# Trying to draw this:
-# https://codepen.io/thebabydino/pen/MRdqry
+# Trying to recreate this: https://codepen.io/thebabydino/pen/MRdqry
 require_relative '2d'
 require 'graphics'
 
@@ -60,8 +59,7 @@ class Image < Graphics::Simulation
     end
   end
 
-  # formula taken from
-  # https://www.rapidtables.com/convert/color/hsl-to-rgb.html
+  # formula taken from here: https://www.rapidtables.com/convert/color/hsl-to-rgb.html
   def hsl(hue, saturation, lightness)
     c = (1 - (2*lightness - 1).abs) * saturation
     x = c * (1 - ((hue/60.0) % 2 - 1).abs)
@@ -80,6 +78,6 @@ class Image < Graphics::Simulation
     a = 255 # opaque
     renderer.format.map_rgba r.round, g.round, b.round, 255
   end
-
-  new.run
 end
+
+Image.new.run

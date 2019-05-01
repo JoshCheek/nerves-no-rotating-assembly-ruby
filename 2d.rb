@@ -1,3 +1,5 @@
+# Methods taken from some code I previously figured out:
+# https://gist.github.com/JoshCheek/91576bb7a13397679fdbf49452a021c2
 require 'matrix'
 
 module TwoD
