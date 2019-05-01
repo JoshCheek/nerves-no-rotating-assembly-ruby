@@ -30,14 +30,12 @@ class Image < Graphics::Simulation
 
 
     num_dots.times do |dot_index|
-      segment_percent =
-        (dot_index % veins_per_segment).to_f / veins_per_segment
-
-      vein_percent = # of segment
-        (dot_index % num_veins).to_f / num_veins
-
-      ring_index =
-        (dot_index / num_veins)
+      vein_index              = dot_index % num_veins
+      ring_index              = dot_index / num_veins
+      segment_index           = vein_index / veins_per_segment
+      vein_in_segment_index   = vein_index % veins_per_segment
+      vein_in_segment_percent = vein_in_segment_index.to_f / veins_per_segment
+      vein_percent            = vein_index.to_f / num_veins
 
       pt =
         translate(w/2, h/2) * # move to middle of the screen
