@@ -6,6 +6,9 @@ require 'graphics'
 class Image < Graphics::Simulation
   include TwoD
 
+  TURN = -2*PI
+  DEG  = TURN/360
+
   def initialize
     super 800, 600
     color.default_proc = -> _, k { k }
@@ -17,20 +20,16 @@ class Image < Graphics::Simulation
     @start_time ||= Time.now
     time = Time.now - @start_time
 
-    num_segments      = 3
-    num_rings         = 7
-    veins_per_segment = 15
-
-    num_veins         = veins_per_segment * num_segments
-    num_dots          = num_veins * num_rings
-
     duration    = 1
     radius      = 5
     distance    = 20
     vein_radius = 120
 
-    turn = 2*PI
-    deg  = turn/360
+    num_segments      = 3
+    num_rings         = 7
+    veins_per_segment = 15
+    num_veins         = veins_per_segment * num_segments
+    num_dots          = num_veins * num_rings
 
     num_dots.times do |dot_index|
       vein_index              = dot_index % num_veins
@@ -45,9 +44,9 @@ class Image < Graphics::Simulation
 
       point =
         translate(w/2, h/2)                             * # move to middle of the screen
-        rotate(ring_index*5*deg + vein_percent*turn)    * # ring index_makes the vein curve, vein_percent rotates the vein into place
+        rotate(ring_index*5*DEG + vein_percent*TURN)    * # ring index_makes the vein curve, vein_percent rotates the vein into place
         translate(vein_radius + ring_index*distance, 0) * # move the point to it's distance from the center
-        rotate(animation_percent*turn)                  * # each vein offset rotates the same
+        rotate(animation_percent*TURN)                  * # each vein offset rotates the same
         point(distance, 0)                                # start the given distance out
 
       color = hsl(vein_percent*360, 1.0, 0.75) # colour each vein the same
