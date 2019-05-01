@@ -8,6 +8,7 @@ class Image < Graphics::Simulation
 
   def initialize
     super 800, 600
+    color.default_proc = -> _, k { k }
   end
 
   def draw(n)
@@ -25,8 +26,8 @@ class Image < Graphics::Simulation
 
     duration    = 1  # seconds
     radius      = 5  # pixels
-    vein_radius = radius*8
-    distance    = 10 # pixels
+    distance    = 30 # pixels
+    vein_radius = 120
 
     turn = 2*PI
 
@@ -34,10 +35,9 @@ class Image < Graphics::Simulation
       turn * n/360
     end
 
-    dot = lambda do |position|
-      circle position[0,0], position[1,0], radius, :white
+    dot = lambda do |position, color|
+      circle position[0,0], position[1,0], radius, color
     end
-
 
     num_dots.times do |dot_index|
       vein_index              = dot_index % num_veins
@@ -48,7 +48,7 @@ class Image < Graphics::Simulation
       vein_percent            = vein_index.to_f / num_veins
 
       animation_percent = (
-        seconds + (vein_in_segment_percent * -duration)
+        seconds + (vein_in_segment_percent * duration)
       ) % duration
 
       pt = translate(w/2, h/2) * # move to middle of the screen
@@ -57,10 +57,29 @@ class Image < Graphics::Simulation
            rotate(animation_percent*turn) *
            point(distance, 0)
 
-      dot[pt]
+      dot[pt, hsl(vein_percent*360, 1.0, 0.75)]
     end
 
-    # box-shadow: inset 0 0 5px 2px hsl(calc(var(--vein-percent)*360), 100%, 75%);
+  end
+
+  # https://www.rapidtables.com/convert/color/hsl-to-rgb.html
+  def hsl(hue, saturation, lightness)
+    c = (1 - (2*lightness - 1).abs) * saturation
+    x = c * (1 - ((hue/60.0) % 2 - 1).abs)
+    m = lightness - c/2
+    case hue % 360
+    when   0 ...  60 then r_prime, g_prime, b_prime = c, x, 0
+    when  60 ... 120 then r_prime, g_prime, b_prime = x, c, 0
+    when 120 ... 180 then r_prime, g_prime, b_prime = 0, c, x
+    when 180 ... 240 then r_prime, g_prime, b_prime = 0, x, c
+    when 240 ... 300 then r_prime, g_prime, b_prime = x, 0, c
+    when 300 ... 360 then r_prime, g_prime, b_prime = c, 0, x
+    end
+    r = (r_prime+m)*255
+    g = (g_prime+m)*255
+    b = (b_prime+m)*255
+    a = 255 # opaque
+    renderer.format.map_rgba r.round, g.round, b.round, 255
   end
 
   new.run
