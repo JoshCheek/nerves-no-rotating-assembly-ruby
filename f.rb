@@ -55,7 +55,7 @@ class Image < Graphics::Simulation
 
       color = hsl(vein_percent*360, 1.0, 0.75) # colour each vein the same
 
-      circle point[0,0], point[1,0], @draw_radius, color
+      circle point[0,0], point[1,0], @draw_radius, color, true
     end
   end
 
